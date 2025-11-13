@@ -1,5 +1,11 @@
 // import React, { useState, useEffect } from "react";
 // import {
+//   GoogleMap,
+//   LoadScript,
+//   Marker,
+//   InfoWindow
+// } from "@react-google-maps/api";
+// import {
 //   MapPin,
 //   Upload,
 //   FileText,
@@ -11,15 +17,36 @@
 //   Camera,
 //   Users,
 //   Target,
-//   Calendar
+//   Calendar,
+//   TreePine,
+//   Droplet,
+//   GraduationCap,
+//   HeartPulse,
+//   CheckCircle2,
+//   Clock,
+//   Map,
+//   FileDown,
+//   Search,
+//   ChevronRight
 // } from "lucide-react";
+
+// const mapContainerStyle = {
+//   width: "100%",
+//   height: "100%",
+//   borderRadius: "16px"
+// };
+
+// const center = {
+//   lat: -1.2921,
+//   lng: 36.8219
+// };
 
 // const CSRToolkit = () => {
 //   const [activeTab, setActiveTab] = useState("dashboard");
 //   const [projects, setProjects] = useState([]);
 //   const [selectedProject, setSelectedProject] = useState(null);
-//   const [showAddForm, setShowAddForm] = useState(false);
 //   const [filterRegion, setFilterRegion] = useState("all");
+//   const [searchTerm, setSearchTerm] = useState("");
 //   const [stats, setStats] = useState({
 //     totalProjects: 0,
 //     totalBeneficiaries: 0,
@@ -27,71 +54,74 @@
 //     completionRate: 0
 //   });
 
-//   // Initialize with sample data
 //   useEffect(() => {
 //     const sampleProjects = [
 //       {
 //         id: 1,
-//         title: "Tree Planting Initiative",
+//         title: "Urban Tree Planting Drive",
 //         type: "Environmental",
 //         region: "Nairobi",
-//         location: { lat: -1.2921, lng: 36.8219 },
+//         position: { lat: -1.2921, lng: 36.8219 },
 //         date: "2025-11-01",
 //         beneficiaries: 500,
 //         status: "Completed",
-//         description: "Planted 1000 trees in community parks",
-//         photos: ["tree1.jpg", "tree2.jpg"],
-//         metrics: { trees: 1000, volunteers: 45 }
+//         description: "Planted 1000 indigenous trees in Uhuru and Central Park",
+//         photos: 3,
+//         metrics: { trees: 1000 },
+//         icon: TreePine
 //       },
 //       {
 //         id: 2,
-//         title: "Clean Water Project",
+//         title: "Coastal Clean Water Project",
 //         type: "Infrastructure",
 //         region: "Mombasa",
-//         location: { lat: -4.0435, lng: 39.6682 },
+//         position: { lat: -4.0435, lng: 39.6682 },
 //         date: "2025-10-15",
 //         beneficiaries: 1200,
 //         status: "In Progress",
-//         description: "Installing water purification systems",
-//         photos: ["water1.jpg"],
-//         metrics: { systems: 3, households: 400 }
+//         description: "Solar-powered water purification in Likoni",
+//         photos: 5,
+//         metrics: { systems: 3 },
+//         icon: Droplet
 //       },
 //       {
 //         id: 3,
-//         title: "Education Support Program",
+//         title: "Back to School Program",
 //         type: "Education",
 //         region: "Kisumu",
-//         location: { lat: -0.0917, lng: 34.768 },
+//         position: { lat: -0.0917, lng: 34.768 },
 //         date: "2025-11-10",
 //         beneficiaries: 800,
 //         status: "Completed",
-//         description: "Distributed school supplies and books",
-//         photos: ["edu1.jpg", "edu2.jpg"],
-//         metrics: { students: 800, schools: 5 }
+//         description: "Learning materials to 5 schools in Kisumu County",
+//         photos: 8,
+//         metrics: { students: 800 },
+//         icon: GraduationCap
 //       },
 //       {
 //         id: 4,
-//         title: "Healthcare Outreach",
+//         title: "Mobile Health Camps",
 //         type: "Health",
 //         region: "Nakuru",
-//         location: { lat: -0.3031, lng: 36.08 },
+//         position: { lat: -0.3031, lng: 36.08 },
 //         date: "2025-09-20",
 //         beneficiaries: 600,
 //         status: "Completed",
-//         description: "Free medical camps and vaccination drives",
-//         photos: ["health1.jpg"],
-//         metrics: { patients: 600, vaccinations: 450 }
+//         description: "Free medical camps in Nakuru Town",
+//         photos: 6,
+//         metrics: { patients: 600 },
+//         icon: HeartPulse
 //       }
 //     ];
 //     setProjects(sampleProjects);
 //     calculateStats(sampleProjects);
 //   }, []);
 
-//   const calculateStats = (projectList) => {
+//   const calculateStats = (list) => {
 //     const filtered =
 //       filterRegion === "all"
-//         ? projectList
-//         : projectList.filter((p) => p.region === filterRegion);
+//         ? list
+//         : list.filter((p) => p.region === filterRegion);
 //     const totalBeneficiaries = filtered.reduce(
 //       (sum, p) => sum + p.beneficiaries,
 //       0
@@ -115,174 +145,208 @@
 //     calculateStats(projects);
 //   }, [filterRegion, projects]);
 
-//   const handleAddProject = (formData) => {
-//     const newProject = {
-//       id: projects.length + 1,
-//       ...formData,
-//       date: new Date().toISOString().split("T")[0],
-//       photos: [],
-//       status: "In Progress"
+//   const filteredProjects = projects
+//     .filter((p) => filterRegion === "all" || p.region === filterRegion)
+//     .filter((p) => p.title.toLowerCase().includes(searchTerm.toLowerCase()));
+
+//   const getMarkerIcon = (type) => {
+//     const colors = {
+//       Environmental: "#10b981",
+//       Infrastructure: "#3b82f6",
+//       Education: "#8b5cf6",
+//       Health: "#ef4444"
 //     };
-//     setProjects([...projects, newProject]);
-//     setShowAddForm(false);
+//     return {
+//       path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z",
+//       fillColor: colors[type] || "#6b7280",
+//       fillOpacity: 1,
+//       strokeWeight: 2,
+//       strokeColor: "#ffffff",
+//       scale: 2.2,
+//       labelOrigin: { x: 12, y: 12 }
+//     };
 //   };
 
-//   const exportReport = () => {
-//     const filtered =
-//       filterRegion === "all"
-//         ? projects
-//         : projects.filter((p) => p.region === filterRegion);
-//     const report = {
-//       generatedDate: new Date().toISOString(),
-//       summary: stats,
-//       projects: filtered
-//     };
-//     const blob = new Blob([JSON.stringify(report, null, 2)], {
-//       type: "application/json"
-//     });
-//     const url = URL.createObjectURL(blob);
-//     const a = document.createElement("a");
-//     a.href = url;
-//     a.download = `CSR_Report_${new Date().toISOString().split("T")[0]}.json`;
-//     a.click();
-//   };
-
-//   // Dashboard component
 //   const Dashboard = () => (
-//     <div className="space-y-6">
-//       {/* Stats */}
-//       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+//     <div className="space-y-8">
+//       {/* Stats Cards - same as before */}
+//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 //         {[
 //           {
 //             label: "Total Projects",
 //             value: stats.totalProjects,
-//             color: "blue",
-//             icon: Target
+//             icon: Target,
+//             color: "from-blue-500 to-blue-700"
 //           },
 //           {
-//             label: "Beneficiaries",
+//             label: "People Impacted",
 //             value: stats.totalBeneficiaries.toLocaleString(),
-//             color: "green",
-//             icon: Users
+//             icon: Users,
+//             color: "from-emerald-500 to-green-700"
 //           },
 //           {
 //             label: "Active Regions",
 //             value: stats.activeRegions,
-//             color: "purple",
-//             icon: MapPin
+//             icon: MapPin,
+//             color: "from-purple-500 to-purple-700"
 //           },
 //           {
 //             label: "Completion Rate",
 //             value: `${stats.completionRate}%`,
-//             color: "orange",
-//             icon: BarChart3
+//             icon: BarChart3,
+//             color: "from-orange-500 to-red-600"
 //           }
-//         ].map(({ label, value, color, icon: Icon }) => (
+//         ].map((stat, i) => (
 //           <div
-//             key={label}
-//             className={`bg-gradient-to-br from-${color}-500 to-${color}-600 rounded-lg p-6 text-white`}
+//             key={i}
+//             className={`bg-gradient-to-br ${stat.color} rounded-2xl p-6 text-white shadow-xl hover:scale-105 transition-all duration-300`}
 //           >
 //             <div className="flex items-center justify-between">
 //               <div>
-//                 <p className={`text-${color}-100 text-sm`}>{label}</p>
-//                 <p className="text-3xl font-bold mt-2">{value}</p>
+//                 <p className="text-white/80 text-sm font-medium">
+//                   {stat.label}
+//                 </p>
+//                 <p className="text-4xl font-bold mt-2">{stat.value}</p>
 //               </div>
-//               <Icon className={`w-10 h-10 text-${color}-200`} />
+//               <stat.icon className="w-12 h-12 opacity-90" />
 //             </div>
 //           </div>
 //         ))}
 //       </div>
 
-//       {/* Map Simulation */}
-//       <div className="bg-white rounded-lg shadow-lg p-6">
-//         <div className="flex items-center justify-between mb-4">
-//           <h3 className="text-xl font-semibold text-gray-800">
-//             Project Distribution Map
-//           </h3>
-//           <select
-//             value={filterRegion}
-//             onChange={(e) => setFilterRegion(e.target.value)}
-//             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//           >
-//             <option value="all">All Regions</option>
-//             <option value="Nairobi">Nairobi</option>
-//             <option value="Mombasa">Mombasa</option>
-//             <option value="Kisumu">Kisumu</option>
-//             <option value="Nakuru">Nakuru</option>
-//           </select>
-//         </div>
-//         <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg h-96 flex items-center justify-center relative overflow-hidden">
-//           {(filterRegion === "all"
-//             ? projects
-//             : projects.filter((p) => p.region === filterRegion)
-//           ).map((project, idx) => (
-//             <div
-//               key={project.id}
-//               className="absolute bg-blue-500 rounded-full w-8 h-8 flex items-center justify-center text-white text-xs font-bold shadow-lg cursor-pointer hover:scale-110 transition-transform"
-//               style={{
-//                 left: `${20 + ((idx * 15) % 60)}%`,
-//                 top: `${25 + ((idx * 20) % 50)}%`
-//               }}
-//               onClick={() => {
-//                 setSelectedProject(project);
-//                 setActiveTab("projects");
-//               }}
-//               title={project.title}
-//             >
-//               {idx + 1}
+//       {/* Real Google Map */}
+//       <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
+//         <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+//           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+//             <div>
+//               <h3 className="text-2xl font-bold flex items-center gap-3">
+//                 <Map className="w-8 h-8" />
+//                 Live CSR Project Map - Kenya
+//               </h3>
+//               <p className="text-blue-100 mt-1">
+//                 Click markers for project details
+//               </p>
 //             </div>
-//           ))}
-//           <div className="text-center z-10">
-//             <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-//             <p className="text-gray-500 font-medium">Interactive Project Map</p>
+//             <select
+//               value={filterRegion}
+//               onChange={(e) => setFilterRegion(e.target.value)}
+//               className="px-5 py-3 bg-white/20 backdrop-blur rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-white/50"
+//             >
+//               <option value="all">All Regions</option>
+//               <option value="Nairobi">Nairobi</option>
+//               <option value="Mombasa">Mombasa</option>
+//               <option value="Kisumu">Kisumu</option>
+//               <option value="Nakuru">Nakuru</option>
+//             </select>
 //           </div>
 //         </div>
+
+//         <div className="h-96 relative">
+//           <LoadScript googleMapsApiKey="AIzaSyCL5xAoKFcQLMEaDPQtq7wWaN7ofF91nsU">
+//             <GoogleMap
+//               mapContainerStyle={mapContainerStyle}
+//               center={center}
+//               zoom={6}
+//               options={{
+//                 styles: [
+//                   {
+//                     featureType: "water",
+//                     elementType: "geometry",
+//                     stylers: [{ color: "#e0f2fe" }]
+//                   },
+//                   {
+//                     featureType: "landscape",
+//                     elementType: "geometry",
+//                     stylers: [{ color: "#f5f5f5" }]
+//                   },
+//                   {
+//                     featureType: "road",
+//                     elementType: "geometry",
+//                     stylers: [{ lightness: 50 }]
+//                   }
+//                 ],
+//                 streetViewControl: false,
+//                 mapTypeControl: false,
+//                 fullscreenControl: false
+//               }}
+//             >
+//               {filteredProjects.map((project) => (
+//                 <Marker
+//                   key={project.id}
+//                   position={project.position}
+//                   icon={getMarkerIcon(project.type)}
+//                   label={{
+//                     text: `${project.beneficiaries}`,
+//                     color: "white",
+//                     fontSize: "12px",
+//                     fontWeight: "bold"
+//                   }}
+//                   onClick={() => setSelectedProject(project)}
+//                   animation={window.google?.maps?.Animation?.DROP}
+//                 />
+//               ))}
+
+//               {selectedProject && (
+//                 <InfoWindow
+//                   position={selectedProject.position}
+//                   onCloseClick={() => setSelectedProject(null)}
+//                 >
+//                   <div className="p-3 max-w-xs">
+//                     <h4 className="font-bold text-lg text-gray-800">
+//                       {selectedProject.title}
+//                     </h4>
+//                     <p className="text-sm text-gray-600 mt-1">
+//                       {selectedProject.region}
+//                     </p>
+//                     <p className="text-xs text-gray-500 mt-2">
+//                       {selectedProject.description}
+//                     </p>
+//                     <div className="flex items-center gap-4 mt-3 text-sm">
+//                       <span className="flex items-center gap-1">
+//                         <Users className="w-4 h-4" />{" "}
+//                         {selectedProject.beneficiaries.toLocaleString()}
+//                       </span>
+//                       <span
+//                         className={`px-2 py-1 rounded text-xs font-medium ${
+//                           selectedProject.status === "Completed"
+//                             ? "bg-green-100 text-green-700"
+//                             : "bg-amber-100 text-amber-700"
+//                         }`}
+//                       >
+//                         {selectedProject.status}
+//                       </span>
+//                     </div>
+//                     <button
+//                       onClick={() => {
+//                         setActiveTab("projects");
+//                         setSelectedProject(selectedProject);
+//                       }}
+//                       className="mt-3 text-blue-600 font-medium text-sm hover:underline"
+//                     >
+//                       View Full Details →
+//                     </button>
+//                   </div>
+//                 </InfoWindow>
+//               )}
+//             </GoogleMap>
+//           </LoadScript>
+//         </div>
 //       </div>
+
+//       {/* Recent Activity - unchanged */}
+//       {/* ... */}
 //     </div>
 //   );
 
-//   // Other tab components are unchanged (ProjectsList, AddProjectForm, Reports)
+//   // ProjectsList and Reports components remain the same (or use previous enhanced version)
 
 //   return (
-//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-//       {/* Header */}
-//       <div className="bg-white shadow-lg">
-//         <div className="max-w-7xl mx-auto px-4 py-6">
-//           <div className="flex items-center justify-between">
-//             <div className="flex items-center space-x-3">
-//               <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-//                 <Target className="w-7 h-7 text-white" />
-//               </div>
-//               <div>
-//                 <h1 className="text-2xl font-bold text-gray-800">
-//                   CSR Reporting Toolkit
-//                 </h1>
-//                 <p className="text-sm text-gray-500">
-//                   Track, Monitor & Report CSR Activities
-//                 </p>
-//               </div>
-//             </div>
-//             <div className="flex items-center space-x-2">
-//               <Filter className="w-5 h-5 text-gray-400" />
-//               <select
-//                 value={filterRegion}
-//                 onChange={(e) => setFilterRegion(e.target.value)}
-//                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//               >
-//                 <option value="all">All Regions</option>
-//                 <option value="Nairobi">Nairobi</option>
-//                 <option value="Mombasa">Mombasa</option>
-//                 <option value="Kisumu">Kisumu</option>
-//                 <option value="Nakuru">Nakuru</option>
-//               </select>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
+//     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+//       {/* Header & Tabs - same as before */}
+//       {/* ... Paste the rest of your enhanced UI here ... */}
 
-//       {/* Tabs */}
-//       <div className="max-w-7xl mx-auto px-4 py-8">
-//         <div className="flex space-x-2 border-b border-gray-200 mb-6">
+//       <div className="max-w-7xl mx-auto px-6 pt-8">
+//         <div className="flex space-x-1 bg-white/60 backdrop-blur rounded-2xl shadow-lg p-2 mb-8">
 //           {[
 //             { id: "dashboard", label: "Dashboard", icon: BarChart3 },
 //             { id: "projects", label: "Projects", icon: MapPin },
@@ -291,41 +355,21 @@
 //             <button
 //               key={tab.id}
 //               onClick={() => setActiveTab(tab.id)}
-//               className={`flex items-center space-x-2 px-6 py-3 font-medium transition-colors ${
+//               className={`flex-1 flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-semibold transition-all ${
 //                 activeTab === tab.id
-//                   ? "text-blue-600 border-b-2 border-blue-600"
-//                   : "text-gray-500 hover:text-gray-700"
+//                   ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+//                   : "text-gray-600 hover:bg-gray-100"
 //               }`}
 //             >
-//               <tab.icon className="w-5 h-5" />
+//               <tab.icon className="w-6 h-6" />
 //               <span>{tab.label}</span>
 //             </button>
 //           ))}
 //         </div>
 
-//         {/* Dynamic Tab Rendering */}
 //         {activeTab === "dashboard" && <Dashboard />}
-//         {activeTab === "projects" && (
-//           <p className="text-gray-600">
-//             Project management UI here (from Claude’s code)
-//           </p>
-//         )}
-//         {activeTab === "reports" && (
-//           <p className="text-gray-600">
-//             Analytics and export UI here (from Claude’s code)
-//           </p>
-//         )}
+//         {/* Other tabs */}
 //       </div>
-
-//       {/* Footer */}
-//       <footer className="mt-12 py-6 border-t border-gray-200">
-//         <div className="text-center text-gray-500 text-sm">
-//           <p className="font-medium mb-2">CSR Reporting Toolkit - Simulation</p>
-//           <p className="text-xs">
-//             Built with React + TailwindCSS | Designed by Dickson Esamai Mukwe
-//           </p>
-//         </div>
-//       </footer>
 //     </div>
 //   );
 // };
@@ -904,8 +948,8 @@ const CSRToolkit = () => {
               responsibility
             </p>
             <p className="text-sm text-gray-500 mt-6">
-              © 2025 • Built with React + Tailwind CSS • Designed by Dickson
-              Esamai Mukwe
+              © 2025 •{" "}
+              <span className="text-sm">Designed with ❤️ by Teckish</span> •
             </p>
           </div>
         </footer>
